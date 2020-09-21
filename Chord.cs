@@ -24,6 +24,13 @@ namespace ChordLibrary
             NoteList = noteNames;
         }
 
+        public Chord (NoteNames rootNote, int[] noteDifference, string chordName)
+        {
+            RootNote = rootNote;
+            ChordName = chordName;
+            NoteDifference = noteDifference;
+        }
+
         //Insert Chord if new
         public string InsertChord(Chord chord)
         {

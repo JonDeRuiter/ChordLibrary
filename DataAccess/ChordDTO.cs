@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO.FileStream;
 
 namespace ChordLibrary.DataAccess
 {
@@ -14,7 +13,7 @@ namespace ChordLibrary.DataAccess
         private string ValDelim
         {
             get { return ValDelim; }
-            set => ValDelim = ",";
+            set => ValDelim = "|";
         }
         private string LineDelim
         {
@@ -37,8 +36,9 @@ namespace ChordLibrary.DataAccess
         {
             //TODO: logic to read and write each file, 1 per chord length
             //- Note Differences - RootNote - Chord Name
-            //load former file
-            //create Body
+            StringBuilder sb = new StringBuilder();
+            
+            
             //set header 
             //set footer
             //write to file
@@ -54,8 +54,57 @@ namespace ChordLibrary.DataAccess
             string returnString;
             DateTime lastMod = new DateTime();
             string lastModDt = lastMod.ToLongDateString();
-            returnString = "$Header: File for Chords of length {numLines} contains {chordLength} records. Last updated {lastModDt} /n CSV format with NoteDifference, RootNote, ChordName";
+            returnString = "$Header: File for Chords of length {chordLength} contains {numLines} records. Last updated {lastModDt} /n CSV format with RootNote, NoteDifference, ChordName";
             return  returnString;
+        }
+
+        private string BuildFooter(string numLines, string chordLength)
+        {
+            string returnString;
+            DateTime lastMod = new DateTime();
+            string lastModDt = lastMod.ToLongDateString();
+            returnString = "$Footer: File for Chords of length {chordLength} wrote {numLines} records. Last updated {lastModDt}";
+            return returnString;
+        }
+
+        private string BuildBody(Chord newChord)
+        {
+            List<Chord> allChords = new List<Chord>();
+            //Access data add to list
+
+            //add new data
+            allChords.Add(newChord);
+            //sort data - do I actually care how?
+            allChords.Sort();
+
+            string fileBody = ChordsToBody(allChords);
+
+            return fileBody;
+        }
+
+        private string ChordsToBody(List<Chord> chordList)
+        {
+            string body = "";
+            foreach (Chord chord in chordList)
+            {
+                body += ChordToLine(chord);
+            }
+            return body;
+        }
+
+        private string ChordToLine(Chord chord)
+        {
+            string line = chord.RootNote + ValDelim;
+
+            foreach (int i in chord.NoteDifference)
+            {
+                line += chord.NoteDifference[i];
+            }
+
+            line += chord.ChordName + LineDelim;
+            
+            return line;
+
         }
 
     }
