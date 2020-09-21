@@ -1,0 +1,6 @@
+C:\Users\Jonathan\source\repos\ChordLibrary\bin\Debug\netcoreapp2.1\ChordLibrary.deps.json
+C:\Users\Jonathan\source\repos\ChordLibrary\bin\Debug\netcoreapp2.1\ChordLibrary.dll
+C:\Users\Jonathan\source\repos\ChordLibrary\obj\Debug\netcoreapp2.1\ChordLibrary.csprojAssemblyReference.cache
+C:\Users\Jonathan\source\repos\ChordLibrary\obj\Debug\netcoreapp2.1\ChordLibrary.csproj.CoreCompileInputs.cache
+C:\Users\Jonathan\source\repos\ChordLibrary\obj\Debug\netcoreapp2.1\ChordLibrary.AssemblyInfoInputs.cache
+C:\Users\Jonathan\source\repos\ChordLibrary\obj\Debug\netcoreapp2.1\ChordLibrary.AssemblyInfo.cs
