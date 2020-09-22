@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.IO.FileStream;
 
 namespace ChordLibrary.DataAccess
 {
@@ -54,7 +53,7 @@ namespace ChordLibrary.DataAccess
             string returnString;
             DateTime lastMod = new DateTime();
             string lastModDt = lastMod.ToLongDateString();
-            returnString = "$Header: File for Chords of length {chordLength} contains {numLines} records. Last updated {lastModDt} /n CSV format with RootNote, NoteDifference, ChordName";
+            returnString = "$Header: File for Chords of length {chordLength} contains {numLines} records. Last updated {lastModDt} /n CSV format with RootNote, NoteDifference, ChordName**";
             return  returnString;
         }
 
@@ -63,7 +62,7 @@ namespace ChordLibrary.DataAccess
             string returnString;
             DateTime lastMod = new DateTime();
             string lastModDt = lastMod.ToLongDateString();
-            returnString = "$Footer: File for Chords of length {chordLength} wrote {numLines} records. Last updated {lastModDt}";
+            returnString = "**$Footer: File for Chords of length {chordLength} wrote {numLines} records. Last updated {lastModDt}";
             return returnString;
         }
 
