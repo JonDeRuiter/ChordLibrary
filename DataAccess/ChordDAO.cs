@@ -114,8 +114,12 @@ namespace ChordLibrary.DataAccess
         {
             List<Chord> chords = new List<Chord>();
 
-            string line;
-            chords.Add(ChordFromLine(line));
+            string[] splitLines = body.Split(LineDelim);
+
+            foreach (string line in splitLines)
+            {
+                chords.Add(ChordFromLine(line));            }
+            
 
 
             return chords;
@@ -124,13 +128,19 @@ namespace ChordLibrary.DataAccess
         private Chord ChordFromLine(string line)
         {
             Chord chord = new Chord();
-            chord.RootNote = line.Substring();
+            string[] fieldArray = line.Split(ValDelim);
+            
+            if (int.TryParse(fieldArray[1], out int rootInt))
+            {
+                chord.RootNote. ; = (enum)rootInt;
+            }
+
             return chord;
         }
 
-        private string SplitOnField(string line, int startOn)
-        {
-            string field = line.Substring(startOn, line.Split);
-        }
+        //private string SplitOnField(string line, int startOn)
+        //{
+        //    string field = line.Substring(startOn, line.Split);
+        //}
     }
 }

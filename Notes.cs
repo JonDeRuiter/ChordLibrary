@@ -30,6 +30,7 @@ namespace ChordLibrary
         Cb = 12,
         B = 12,
     }
+
     public class Notes
     {
         public NoteNames noteNames { get; set; }
