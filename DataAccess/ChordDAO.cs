@@ -38,8 +38,7 @@ namespace ChordLibrary.DataAccess
 
         public static List<Chord> GetAllChordData(string chordSize)
         {
-            //read data
-            //TODO: If a file for the size does not exist - create one
+            //read data            
             string chordString;
             ChordDAO dao = new ChordDAO(chordSize);
             chordString = dao.ReadData(dao);
@@ -76,6 +75,11 @@ namespace ChordLibrary.DataAccess
                 using (StreamReader sr = new StreamReader(dao.FilePath))
                 {
                     fullFile = sr.ReadToEnd();
+                }
+
+                if (FileEmpty(fullFile))
+                {
+                    return "The file is empty";
                 }
 
                 header = GetHeader(fullFile);
@@ -169,6 +173,33 @@ namespace ChordLibrary.DataAccess
 
             return noteRels;
         }
+
+        private void FileCheck(ChordDAO dao)
+        {
+            if (!File.Exists(dao.FilePath))
+            {
+                using (StreamWriter sw = File.CreateText(dao.FilePath))
+                {
+
+                }
+            }
+            //file exists, we don't need to create it
+            }
+
+        private bool FileEmpty(string fileContents)
+        {
+            
+            if (fileContents.Count() >= 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
     }
 
 }

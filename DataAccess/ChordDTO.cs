@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace ChordLibrary.DataAccess
 {
@@ -31,26 +32,28 @@ namespace ChordLibrary.DataAccess
 
         }
     
-        public static string InsertNewChord(Chord newChord)
+        public static string InsertNewChord(List<Chord> chords)
         {
-            //TODO: logic to write each file, 1 per chord length
-            //- Note Differences - RootNote - Chord Name
-                       
-            string fullFile = BuildBody(newChord);
+            Chord newChord = chords[0];
+            ChordDTO newInsert = new ChordDTO();
+            string chordLength = (newChord.NoteList.Count).ToString();
+            newInsert.FilePath = chordLength;
+
+            FileCheck(newInsert);
+            
+            string fullFile = BuildBody(chords);
 
             string[] lines = fullFile.Split(LineDelim);
             int lineCount = lines.Length;
-            string chordLength = (newChord.NoteList.Count).ToString();
+            
 
             fullFile = BuildHeader(lineCount.ToString(), chordLength) + fullFile;
             fullFile = fullFile + BuildFooter(lineCount.ToString(), chordLength);
-           
-            //write to file
-            ChordDTO newInsert = new ChordDTO();
 
-            newInsert.FilePath = chordLength;
-            
-            return "There was a problem writting this chord.";
+            //write to file
+            WriteFile(newInsert, fullFile);
+
+            return "New Chord Added";
         }
         
         private static string BuildHeader(string numLines, string chordLength)
@@ -71,17 +74,21 @@ namespace ChordLibrary.DataAccess
             return returnString;
         }
 
-        private static string BuildBody(Chord newChord)
+        private static string BuildBody(List<Chord> chords)
         {
             List<Chord> allChords = new List<Chord>();
             //Access data add to list
-
+            Chord newChord = chords[0];
             int chordLength = newChord.NoteDifference.Length;
             allChords = ChordDAO.GetAllChordData(chordLength.ToString());
 
             //add new data
-            allChords.Add(newChord);
+            foreach (Chord c in chords)
+            {
+                allChords.Add(c);
+            }            
             //sort data - do I actually care how?
+            //TODO: figure out of sorting helps at all.
             allChords.Sort();
 
             string fileBody = ChordsToBody(allChords);
@@ -113,6 +120,26 @@ namespace ChordLibrary.DataAccess
             
             return line;
 
+        }
+
+        private static void FileCheck(ChordDTO dto)
+        {
+            if (!File.Exists(dto.FilePath))
+            {
+                using(StreamWriter sw  = File.CreateText(dto.FilePath))
+                {
+                    //this creates a file we can now use
+                }
+            }            
+                //file exists, we don't need to create it            
+        }
+
+        private static void WriteFile(ChordDTO dto, string fullFile)
+        {
+            using (StreamWriter sw = File.CreateText(dto.FilePath))
+            {
+                sw.Write(fullFile);
+            }
         }
 
     }

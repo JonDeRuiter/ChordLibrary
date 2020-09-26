@@ -6,7 +6,7 @@ namespace ChordLibrary
 {
     public class Chord
     {
-        public string ChordName { get; set; }     
+        public string ChordName { get; set; }
         public NoteNames RootNote { get; set; }
         public List<NoteNames> NoteList { get; set; }
         public int[] NoteDifference { get; set; }
@@ -18,13 +18,13 @@ namespace ChordLibrary
 
         }
 
-        public Chord (string chordName, List<NoteNames> noteNames)
+        public Chord(string chordName, List<NoteNames> noteNames)
         {
             ChordName = chordName;
             NoteList = noteNames;
         }
 
-        public Chord (NoteNames rootNote, int[] noteDifference, string chordName)
+        public Chord(NoteNames rootNote, int[] noteDifference, string chordName)
         {
             RootNote = rootNote;
             ChordName = chordName;
@@ -34,10 +34,11 @@ namespace ChordLibrary
         //Insert Chord if new
         public string InsertChord(Chord chord)
         {
-            if (chord.IsNewChord())
+            if (chord.IsNewChord(chord))
             {
                 //insert chord + all variations of it root c through b
-                ChordDTO.InsertNewChord(chord);
+                List<Chord> chords = GenAllChordsFromEntry(chord);
+                ChordDTO.InsertNewChord(chords);
             }
             else
             {
@@ -52,27 +53,32 @@ namespace ChordLibrary
         {
             Chord unknownChord = new Chord();
             unknownChord.NoteList = notesEntered;
-            unknownChord.RootNote = notesEntered[0];          
+            unknownChord.RootNote = notesEntered[0];
 
             unknownChord.NoteDifference = FindNoteRelationship(notesEntered);
-                        
-            if (unknownChord.IsNewChord())
+
+            if (unknownChord.IsNewChord(unknownChord))
             {
                 unknownChord.Message = "Either this is not a formal chord, or we don't have it in our system yet.";
             }
             else
             {
+                unknownChord = ChordDAO.FindAChord(unknownChord);
                 unknownChord.Message = "We found your chord!";
-                //TODO: get the rest of the chord data
             }
 
             return unknownChord;
-            }
-        
-        private bool IsNewChord()
+        }
+
+        private bool IsNewChord(Chord chord)
         {
-            //TODO: make a connection to storage to check
-            //this.Chord;
+            Chord emptyChord = ChordDAO.FindAChord(chord);
+
+            //I just picked an element that will be there everytime
+            if (emptyChord.ChordName == null)
+            {
+                return true;
+            }
 
             return false;
         }
@@ -86,6 +92,8 @@ namespace ChordLibrary
 
             int rootNote = (int)noteNames[0];
             int[] enumArray = EnumToIntArray(noteNames);
+            //TODO: first find the index of the root, so that chord inversions work
+            //but do I even want to safeguard these? That will make it harder to return the notes themselves
             for (int i = 1; i < enumArray.Length; i++)
             {
                 int safeNote = SafeGuardNotes(rootNote, enumArray[i]);
@@ -120,8 +128,21 @@ namespace ChordLibrary
             {
                 return (note + 12);
             }
+        }
 
 
+
+        private List<Chord> GenAllChordsFromEntry(Chord origChord)
+        {
+            List<Chord> allRoots = new List<Chord>();
+
+            for (int i = 1; i < 13; i++)
+            {
+                Chord chord = new Chord((NoteNames)i, origChord.NoteDifference, origChord.ChordName);
+                allRoots.Add(chord);
+            }
+
+            return allRoots;
         }
 
     }
