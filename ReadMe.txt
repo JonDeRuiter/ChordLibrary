@@ -5,3 +5,4 @@ To add this to another project, open that project in MVS, right click on the pro
 Exposed methods:
 	InsertChord
 	FindChord
+	GetAllChords -- intended for diagnostics of chord data

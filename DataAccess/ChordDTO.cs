@@ -9,12 +9,12 @@ namespace ChordLibrary.DataAccess
         //these can be identical between DTO and DAO
         private string Header { get; set; }
         private string Footer { get; set; }
-        private string ValDelim
+        private static string ValDelim
         {
             get { return ValDelim; }
             set => ValDelim = "|";
         }
-        private string LineDelim
+        private static string LineDelim
         {
             get { return LineDelim; }
             set => LineDelim = "*";
@@ -33,22 +33,27 @@ namespace ChordLibrary.DataAccess
     
         public static string InsertNewChord(Chord newChord)
         {
-            //TODO: logic to read and write each file, 1 per chord length
+            //TODO: logic to write each file, 1 per chord length
             //- Note Differences - RootNote - Chord Name
-            StringBuilder sb = new StringBuilder();
-            
-            
-            //set header 
-            //set footer
+                       
+            string fullFile = BuildBody(newChord);
+
+            string[] lines = fullFile.Split(LineDelim);
+            int lineCount = lines.Length;
+            string chordLength = (newChord.NoteList.Count).ToString();
+
+            fullFile = BuildHeader(lineCount.ToString(), chordLength) + fullFile;
+            fullFile = fullFile + BuildFooter(lineCount.ToString(), chordLength);
+           
             //write to file
             ChordDTO newInsert = new ChordDTO();
 
-            newInsert.FilePath = newChord.NoteList.Count.ToString();
+            newInsert.FilePath = chordLength;
             
             return "There was a problem writting this chord.";
         }
         
-        private string BuildHeader(string numLines, string chordLength)
+        private static string BuildHeader(string numLines, string chordLength)
         {
             string returnString;
             DateTime lastMod = new DateTime();
@@ -57,7 +62,7 @@ namespace ChordLibrary.DataAccess
             return  returnString;
         }
 
-        private string BuildFooter(string numLines, string chordLength)
+        private static string BuildFooter(string numLines, string chordLength)
         {
             string returnString;
             DateTime lastMod = new DateTime();
@@ -66,10 +71,13 @@ namespace ChordLibrary.DataAccess
             return returnString;
         }
 
-        private string BuildBody(Chord newChord)
+        private static string BuildBody(Chord newChord)
         {
             List<Chord> allChords = new List<Chord>();
             //Access data add to list
+
+            int chordLength = newChord.NoteDifference.Length;
+            allChords = ChordDAO.GetAllChordData(chordLength.ToString());
 
             //add new data
             allChords.Add(newChord);
@@ -79,9 +87,9 @@ namespace ChordLibrary.DataAccess
             string fileBody = ChordsToBody(allChords);
 
             return fileBody;
-        }
+        }        
 
-        private string ChordsToBody(List<Chord> chordList)
+        private static string ChordsToBody(List<Chord> chordList)
         {
             string body = "";
             foreach (Chord chord in chordList)
@@ -91,13 +99,14 @@ namespace ChordLibrary.DataAccess
             return body;
         }
 
-        private string ChordToLine(Chord chord)
+        private static string ChordToLine(Chord chord)
         {
             string line = chord.RootNote + ValDelim;
 
             foreach (int i in chord.NoteDifference)
             {
-                line += chord.NoteDifference[i];
+                //just combining notes into a string doesn't let extract them
+                line += chord.NoteDifference[i] + ',';
             }
 
             line += chord.ChordName + LineDelim;

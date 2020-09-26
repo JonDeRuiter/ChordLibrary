@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace ChordLibrary.DataAccess
@@ -35,23 +36,33 @@ namespace ChordLibrary.DataAccess
             FilePath = chordSize;
         }
 
-        public static string GetAllChordData(string chordSize)
+        public static List<Chord> GetAllChordData(string chordSize)
         {
             //read data
+            //TODO: If a file for the size does not exist - create one
             string chordString;
             ChordDAO dao = new ChordDAO(chordSize);
             chordString = dao.ReadData(dao);
 
             List<Chord> allChords = new List<Chord>();
-
-
-
-            return "found something";
+                       
+            return allChords;
         }
 
-        public static Chord FindAChord()
+        public static Chord FindAChord(Chord unknownChord)
         {
-
+            int chordLength = unknownChord.NoteDifference.Length;
+            List<Chord> allChords = GetAllChordData(chordLength.ToString());
+            
+            //TODO figure out if linq works better here
+            foreach (Chord co in allChords)
+            {
+                if (co.NoteDifference == unknownChord.NoteDifference && co.RootNote == unknownChord.RootNote)
+                {
+                    
+                    return co;
+                }
+            }
 
             return new Chord();
         }
@@ -118,8 +129,8 @@ namespace ChordLibrary.DataAccess
 
             foreach (string line in splitLines)
             {
-                chords.Add(ChordFromLine(line));            }
-            
+                chords.Add(ChordFromLine(line));
+            }
 
 
             return chords;
@@ -129,18 +140,35 @@ namespace ChordLibrary.DataAccess
         {
             Chord chord = new Chord();
             string[] fieldArray = line.Split(ValDelim);
-            
+             
             if (int.TryParse(fieldArray[1], out int rootInt))
             {
-                chord.RootNote. ; = (enum)rootInt;
+                chord.RootNote = (NoteNames)rootInt;
             }
+            else
+            {
+                throw new Exception("Error parsing data file: " + line );
+            }
+
+            chord.NoteDifference = GetNoteRelationships(fieldArray[2]);
+
+            chord.ChordName = fieldArray[3];
 
             return chord;
         }
 
-        //private string SplitOnField(string line, int startOn)
-        //{
-        //    string field = line.Substring(startOn, line.Split);
-        //}
+        private int[] GetNoteRelationships(string noteRelString)
+        {
+            string[] stringArray = noteRelString.Split(",");
+            int[] noteRels = new int[stringArray.Length];
+
+            for (int i = 0; i < stringArray.Length; i++)
+            {
+                int.TryParse(stringArray[i], out noteRels[i]);
+            }
+
+            return noteRels;
+        }
     }
+
 }
